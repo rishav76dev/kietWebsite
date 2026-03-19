@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 
 const links = [
   { href: "#overview", label: "Overview" },
@@ -14,6 +14,7 @@ const links = [
 ];
 
 const LinkNav = () => {
+  const scrollRef = useRef(null);
   const [active, setActive] = useState("#overview");
 
   useEffect(() => {
@@ -29,6 +30,10 @@ const LinkNav = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const scroll = (dir) => {
+    if (scrollRef.current) scrollRef.current.scrollBy({ left: dir * 200, behavior: "smooth" });
+  };
+
   return (
     <div
       style={{
@@ -40,13 +45,34 @@ const LinkNav = () => {
         boxShadow: "0 2px 8px rgba(0,0,0,.05)",
       }}
     >
-      <div style={{ maxWidth: 1140, margin: "0 auto", padding: "0 8px" }}>
-        <div
+      <div style={{ maxWidth: 1140, margin: "0 auto", display: "flex", alignItems: "center", gap: 0 }}>
+        {/* Left arrow */}
+        <button
+          onClick={() => scroll(-1)}
+          aria-label="Scroll left"
           style={{
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            padding: "10px 8px",
+            fontSize: 16,
+            color: "#666",
+            flexShrink: 0,
+          }}
+        >
+          ◀
+        </button>
+
+        {/* Scrollable nav */}
+        <div
+          ref={scrollRef}
+          className="scrollbar-hide"
+          style={{
+            overflowX: "auto",
             display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "space-between",
-            gap: 4,
+            gap: 0,
+            scrollBehavior: "smooth",
+            flex: 1,
           }}
         >
           {links.map((link) => {
@@ -57,13 +83,14 @@ const LinkNav = () => {
                 href={link.href}
                 onClick={() => setActive(link.href)}
                 style={{
-                  padding: "8px 10px",
-                  fontSize: ".85rem",
+                  flexShrink: 0,
+                  padding: "14px 18px",
+                  fontSize: ".9rem",
                   fontWeight: 600,
                   color: isActive ? "#0056b3" : "#333",
                   borderBottom: isActive ? "3px solid #0056b3" : "3px solid transparent",
                   transition: ".25s",
-                  whiteSpace: "normal",
+                  whiteSpace: "nowrap",
                   textDecoration: "none",
                 }}
               >
@@ -72,6 +99,23 @@ const LinkNav = () => {
             );
           })}
         </div>
+
+        {/* Right arrow */}
+        <button
+          onClick={() => scroll(1)}
+          aria-label="Scroll right"
+          style={{
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            padding: "10px 8px",
+            fontSize: 16,
+            color: "#666",
+            flexShrink: 0,
+          }}
+        >
+          ▶
+        </button>
       </div>
     </div>
   );
